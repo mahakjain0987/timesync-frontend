@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeSync Login</title>
+
+
+
+<link rel="stylesheet" href="input.css">
+
+<style>
+
+/* floating animation */
+@keyframes float{
+0%{transform:translateY(0)}
+100%{transform:translateY(-32px)}
+}
+
+.shape{
+position:absolute;
+border-radius:50%;
+opacity:.26;
+animation:float infinite alternate ease-in-out;
+}
+
+/* typing animation */
+
+@keyframes typing{
+to{width:19ch}
+}
+
+@keyframes blink{
+50%{border-color:transparent}
+}
+
+.typing{
+width:0;
+overflow:hidden;
+white-space:nowrap;
+border-right:2px solid white;
+animation:typing 2.7s steps(16) forwards, blink .8s step-end 6;
+}
+
+@keyframes typing{
+from{width:0}
+to{width:16ch}
+}
+
+@keyframes blink{
+50%{border-color:transparent}
+}
+
+</style>
+
+</head>
+
+<body class="h-screen flex justify-center items-center bg-[url('https://images.unsplash.com/photo-1557683304-673a23048d34?auto=format&fit=crop&w=1350&q=80')] bg-cover bg-center bg-fixed overflow-hidden font-sans">
+
+<!-- Floating shapes -->
+
+<div class="shape w-[120px] h-[120px] bg-pink-300 top-[9%] left-[9%]" style="animation-duration:8s"></div>
+<div class="shape w-[95px] h-[95px] bg-blue-300 top-[78%] left-[70%]" style="animation-duration:10s"></div>
+<div class="shape w-[80px] h-[80px] bg-orange-200 top-[46%] left-[28%]" style="animation-duration:6s"></div>
+<div class="shape w-[60px] h-[60px] bg-green-200 top-[20%] left-[80%]" style="animation-duration:7s"></div>
+<div class="shape w-[100px] h-[100px] bg-teal-200 top-[75%] left-[14%]" style="animation-duration:12s"></div>
+<div class="shape w-[70px] h-[70px] bg-red-200 top-[32%] left-[58%]" style="animation-duration:5s"></div>
+<div class="shape w-[130px] h-[130px] bg-purple-300 top-[4%] left-[45%]" style="animation-duration:9s"></div>
+<div class="shape w-[65px] h-[65px] bg-indigo-300 top-[87%] left-[34%]" style="animation-duration:11s"></div>
+<div class="shape w-[90px] h-[90px] bg-pink-200 top-[62%] left-[50%]" style="animation-duration:7s"></div>
+<div class="shape w-[75px] h-[75px] bg-green-300 top-[18%] left-[32%]" style="animation-duration:6s"></div>
+<div class="shape w-[110px] h-[110px] bg-orange-200 top-[72%] left-[82%]" style="animation-duration:10s"></div>
+<div class="shape w-[85px] h-[85px] bg-blue-200 top-[5%] left-[68%]" style="animation-duration:5.8s"></div>
+<div class="shape w-[50px] h-[50px] bg-pink-400 top-[58%] left-[5%]" style="animation-duration:9.5s"></div>
+<div class="shape w-[105px] h-[105px] bg-yellow-200 top-[32%] left-[90%]" style="animation-duration:8.5s"></div>
+<div class="shape w-[55px] h-[55px] bg-purple-400 top-[88%] left-[58%]" style="animation-duration:7.3s"></div>
+<div class="shape w-[85px] h-[85px] bg-teal-300 top-[42%] left-[72%]" style="animation-duration:6.2s"></div>
+
+
+<!-- Glass Card -->
+
+<div class="w-[350px] p-8 flex flex-col items-center rounded-2xl backdrop-blur-xl bg-white/10 border border-white/30 shadow-[0_0_40px_rgba(255,255,255,0.35)]">
+
+<img src="image.png" class="w-[95px] h-[95px] rounded-full bg-white p-1 mb-5 object-contain">
+
+<div class="text-white text-xl font-semibold mb-4 typing">
+Welcome to TimeSync
+</div>
+
+<div class="w-full relative">
+<input type="text" placeholder="Username"
+class="w-full p-3 mt-3 rounded-lg outline-none">
+</div>
+
+<div class="w-full relative">
+
+<input id="pass" type="password" placeholder="Password"
+class="w-full p-3 mt-3 rounded-lg outline-none">
+
+<i class="fa-solid fa-eye absolute right-3 top-6 text-gray-500 cursor-pointer"
+onclick="togglePass()"></i>
+
+</div>
+
+<div class="w-full flex justify-between items-center mt-3 text-sm text-white">
+
+<label class="flex items-center gap-2">
+<input type="checkbox">
+Remember me
+</label>
+
+<a href="forgot.html" class="hover:underline">Forgot password?</a>
+
+</div>
+
+<button onclick="window.location.href='planner.html'"
+class="mt-4 w-full p-3 rounded-lg text-white font-semibold text-lg bg-gradient-to-r from-fuchsia-500 to-cyan-400 relative overflow-hidden">
+
+Login
+
+</button>
+
+</div>
+
+
+<script>
+
+function togglePass(){
+let p = document.getElementById("pass");
+p.type = (p.type=="password")?"text":"password";
+}
+
+</script>
+
+</body>
+</html>
