@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimeSync — Planner</title>
+
+
+<!-- FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .sidebar-btn.active{
+background:rgba(255,255,255,0.25);
+font-weight:600;
+}
+    .fc-event{
+border-radius:10px;
+padding:4px 8px;
+font-weight:500;
+}.sidebar-btn{
+padding:10px;
+border-radius:8px;
+background:rgba(255,255,255,0.05);
+text-align:left;
+transition:all .2s ease;
+cursor:pointer;
+}
+
+.sidebar-btn:hover{
+background:rgba(255,255,255,0.15);
+transform:translateX(4px);
+}
+    .light-mode{
+background:#f5f7fb !important;
+color:#222 !important;
+}
+
+.light-mode .bg-white\/10{
+background:rgba(255,255,255,0.9) !important;
+color:#222 !important;
+}
+
+.light-mode .fc-col-header-cell{
+background:#eaeaea !important;
+color:#000 !important;
+}
+    .fc-event{
+cursor:grab;
+}
+    .fc-daygrid-day.selected-day {
+background: rgba(255,255,255,0.15);
+border: 2px solid #8b5cf6;
+}
+    .fc-daygrid-event{
+border-radius:8px;
+padding:3px 6px;
+font-weight:500;
+}
+   .fc-daygrid-day{
+transition:all .25s ease;
+cursor:pointer;
+border-radius:8px;
+}
+
+.fc-daygrid-day:hover{
+background:rgba(255,255,255,0.12);
+transform:scale(1.03);
+box-shadow:0 0 12px rgba(139,92,246,0.5);
+}
+    .card-hover{
+transition:all .25s ease;
+}
+
+.card-hover:hover{
+transform:translateY(-4px) scale(1.01);
+box-shadow:0 18px 45px rgba(0,0,0,0.35);
+}
+::-webkit-scrollbar{
+width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+background:linear-gradient(180deg,#ff00ff,#00eaff);
+border-radius:10px;
+}
+
+::-webkit-scrollbar-track{
+background:transparent;
+}
+/* Background floating animation */
+
+@keyframes float{
+0%{transform:translateY(0)}
+100%{transform:translateY(-40px)}
+}
+
+.shape{
+position:absolute;
+border-radius:50%;
+opacity:.22;
+animation:float infinite alternate linear;
+}
+
+/* LOGO FIX */
+.logo{
+width:60px;
+height:60px;
+-o-object-fit:contain;
+   object-fit:contain;
+border-radius:50%;
+background:white;
+padding:4px;
+flex-shrink:0;
+}
+
+/* FullCalendar styling */
+
+.fc-daygrid-day-frame:hover{
+transform:scale(1.03);
+background:rgba(255,255,255,0.05);
+transition:.2s;
+}
+
+.fc-col-header-cell{
+background:rgba(0,0,0,0.5)!important;
+color:white!important;
+}
+
+.fc-col-header-cell-cushion{
+color:white!important;
+}
+
+</style>
+
+  <link rel="stylesheet" crossorigin href="/assets/input-DdkaU-Dc.css">
+</head>
+
+<body class="min-h-screen text-white font-sans flex justify-center p-8
+bg-[url('https://images.unsplash.com/photo-1557683304-673a23048d34?auto=format&fit=crop&w=1350&q=80')]
+bg-cover bg-center bg-fixed overflow-y-auto">
+
+<!-- floating shapes -->
+
+<div class="shape w-[120px] h-[120px] bg-pink-300 top-[8%] left-[6%]"></div>
+<div class="shape w-[90px] h-[90px] bg-blue-300 top-[75%] left-[75%]"></div>
+<div class="shape w-[70px] h-[70px] bg-green-200 top-[40%] left-[20%]"></div>
+<div class="w-full max-w-[1300px] mx-auto grid grid-cols-[220px_1fr] gap-6 p-6
+bg-white/5 backdrop-blur-xl border border-white/10
+rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
+
+<!-- SIDEBAR -->
+
+<div class="flex flex-col gap-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-4 shadow-xl h-fit">
+
+<div class="font-bold text-lg mb-2">
+TimeSync
+</div>
+
+<button id="plannerBtn" class="sidebar-btn active">📅 Planner</button>
+<button id="tasksBtn" class="sidebar-btn">✅ Tasks</button>
+<button id="statsBtn" class="sidebar-btn">📊 Stats</button>
+<button id="settingsBtn" class="sidebar-btn">⚙ Settings</button>
+
+</div>
+<div class="flex flex-col gap-6">
+
+
+<!-- HEADER -->
+
+<div class="flex items-center gap-4 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-5 shadow-xl card-hover">
+
+<img src="/assets/image-CDYqWIw1.png"
+class="w-14 h-14 rounded-full bg-white p-1 object-contain">
+
+<div>
+<div class="text-2xl font-bold tracking-wide">
+TimeSync — Planner
+</div>
+
+<div class="text-sm opacity-80">
+Click a date to view or add tasks
+</div>
+</div>
+
+<button id="themeToggle"
+class="ml-auto px-3 py-1 rounded-lg bg-gradient-to-r from-purple-500 to-cyan-400 text-sm hover:scale-105 transition">
+🌙 Mode
+</button>
+
+</div>
+
+<div id="plannerSection">
+<!-- GRID LAYOUT -->
+
+<div class="grid grid-cols-1 md:grid-cols-[1fr_340px] gap-6">
+
+<!-- CALENDAR -->
+
+<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-5 shadow-xl h-[560px] overflow-auto card-hover">
+
+<div id="calendar"></div>
+
+</div>
+
+
+<!-- RIGHT PANEL -->
+
+<div class="flex flex-col gap-4">
+
+<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-5 shadow-xl card-hover">
+
+<div class="font-bold mb-2">
+
+Selected: <span id="selDateTxt">—</span>
+
+</div>
+
+<div id="taskContainer">
+
+Click a date to view tasks
+
+</div>
+
+</div>
+
+
+<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-5 shadow-xl card-hover">
+
+<div class="flex justify-between items-center">
+<div class="font-bold">Quick Actions</div>
+<div class="text-sm opacity-70">Saved locally</div>
+</div>
+
+
+
+
+<!-- Weekly Chart Card -->
+
+<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-5 shadow-xl card-hover">
+
+<div class="font-bold mb-3">
+Weekly Productivity
+</div>
+
+<canvas id="productivityChart"></canvas>
+
+</div>
+
+<div class="flex gap-2 mt-3">
+
+<button id="gotoToday"
+class="px-4 py-2 rounded-lg bg-gradient-to-r from-fuchsia-500 to-cyan-400 text-white font-medium hover:scale-105 transition">
+
+Today
+
+</button>
+
+<button id="clearDay"
+class="px-4 py-2 rounded-lg bg-gradient-to-r from-fuchsia-500 to-cyan-400 text-white font-medium hover:scale-105 transition">
+
+Clear Day
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ADD TASK BUTTON -->
+
+<div id="fab"
+class="fixed bottom-8 right-8 w-16 h-16 flex items-center justify-center
+rounded-full text-3xl cursor-pointer text-white
+bg-gradient-to-r from-fuchsia-500 to-cyan-400 shadow-[0_0_30px_rgba(255,0,255,0.7)] hover:scale-110 transition card-hover">
+
++
+
+</div>
+<div id="taskModal"
+class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+
+<div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl p-6 w-[320px]">
+
+<div class="text-lg font-bold mb-3">Add Task</div>
+
+<input id="taskInput"
+class="w-full p-2 rounded-lg bg-white/20 outline-none mb-3"
+placeholder="Enter task name">
+<input id="taskTime"
+type="time"
+class="w-full p-2 rounded-lg bg-white/20 outline-none mb-3">
+
+<div class="flex justify-end gap-2">
+
+<button id="cancelTask"
+class="px-3 py-1 bg-gray-500 rounded">
+Cancel
+</button>
+
+<button id="saveTask"
+class="px-3 py-1 bg-gradient-to-r from-fuchsia-500 to-cyan-400 rounded">
+Add
+</button>
+
+</div>
+
+</div>
+
+</div>
+<div id="tasksSection" class="hidden">
+<h2 class="text-xl font-bold mb-4">Tasks</h2>
+<div id="allTasks"></div>
+</div>
+
+<div id="statsSection" class="hidden space-y-6">
+
+<h2 class="text-2xl font-bold">Statistics</h2>
+
+<div class="grid grid-cols-2 gap-4">
+
+<div class="bg-white/10 p-4 rounded-xl">
+<div class="text-sm opacity-70">Total Tasks</div>
+<div id="totalTasks" class="text-2xl font-bold">0</div>
+</div>
+
+<div class="bg-white/10 p-4 rounded-xl">
+<div class="text-sm opacity-70">Tasks This Week</div>
+<div id="weeklyTasks" class="text-2xl font-bold">0</div>
+</div>
+
+</div>
+
+<div class="bg-white/10 p-5 rounded-xl">
+<div class="font-bold mb-3">Weekly Activity</div>
+<canvas id="statsChart"></canvas>
+</div>
+
+</div>
+
+<div id="settingsSection" class="hidden">
+<h2 class="text-xl font-bold mb-4">Settings</h2>
+<p>Settings panel coming soon</p>
+</div>
+
+
+<script>
+    function generateStats(){
+
+document.getElementById("totalTasks").innerText = tasks.length
+
+const now = new Date()
+const weekStart = new Date()
+weekStart.setDate(now.getDate() - 7)
+
+const weekly = tasks.filter(t => new Date(t.date) >= weekStart)
+
+document.getElementById("weeklyTasks").innerText = weekly.length
+
+const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+
+let counts = [0,0,0,0,0,0,0]
+
+tasks.forEach(t=>{
+const d = new Date(t.date).getDay()
+counts[d]++
+})
+
+const ctx = document.getElementById("statsChart")
+
+new Chart(ctx,{
+type:"bar",
+data:{
+labels:days,
+datasets:[{
+label:"Tasks",
+data:counts,
+backgroundColor:"#8b5cf6"
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{y:{beginAtZero:true}}
+}
+})
+
+}
+async function loadTasks(){
+
+const res = await fetch("https://timesync-backend-eqju.onrender.com/api/tasks")
+
+tasks = await res.json()
+
+calendar.refetchEvents()
+renderTasks()
+generateWeeklyChart()
+
+}
+
+const STORAGE="timesync_tasks"
+
+let tasks = []
+
+let selectedDate=null
+let productivityChart = null
+
+let calendar
+
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+calendar=new FullCalendar.Calendar(
+
+document.getElementById("calendar"),
+
+{
+
+initialView:"dayGridMonth",
+
+height:"auto",
+editable:true,
+eventDrop:updateEventDate,
+
+events:fetchEvents,
+
+dateClick:(info)=>{
+
+selectedDate = info.dateStr
+
+document.getElementById("selDateTxt").innerText = selectedDate
+
+document.querySelectorAll(".fc-daygrid-day").forEach(d=>{
+d.classList.remove("selected-day")
+})
+
+info.dayEl.classList.add("selected-day")
+
+renderTasks()
+
+}
+
+}
+
+)
+
+calendar.render()
+loadTasks()
+Notification.requestPermission()
+
+})
+
+
+function fetchEvents(info,success){
+
+success(
+
+tasks.map(t=>({
+
+id: t.id || t._id,
+title:t.title,
+start:t.date,
+backgroundColor:"#8b5cf6",
+borderColor:"#8b5cf6",
+textColor:"#ffffff"
+
+}))
+
+)
+
+}
+async function updateEventDate(info){
+
+const taskId = info.event.id
+const newDate = info.event.startStr
+
+const task = tasks.find(t => t.id === taskId)
+
+if(!task) return
+
+await fetch(`https://timesync-backend-eqju.onrender.com/api/tasks/${taskId}`,{
+
+method:"PUT",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+title: task.title,
+date: newDate
+})
+
+})
+
+loadTasks()
+
+}
+
+function renderTasks(){
+
+const box=document.getElementById("taskContainer")
+
+box.innerHTML=""
+
+const dayTasks=tasks.filter(t=>t.date===selectedDate)
+
+if(dayTasks.length==0){
+
+box.innerHTML="No tasks"
+
+return
+
+}
+
+dayTasks.forEach(t=>{
+
+const div=document.createElement("div")
+
+div.className="p-2 bg-gradient-to-r from-purple-500/30 to-cyan-400/30 rounded-lg mb-2 backdrop-blur"
+
+
+div.innerHTML = `
+<div class="flex justify-between items-center">
+<span>${t.title}</span>
+<button class="deleteTask text-red-400 px-2 cursor-pointer" data-id="${t.id || t._id}">
+<span class="pointer-events-none">🗑</span>
+</button>
+</div>
+`
+box.appendChild(div)
+
+})
+
+}
+document.addEventListener("click", async (e)=>{
+
+const btn = e.target.closest(".deleteTask")
+
+if(!btn) return
+
+const id = btn.dataset.id
+console.log("Deleting id:", id)
+
+await fetch(`https://timesync-backend-eqju.onrender.com/api/tasks/${id}`,{
+method:"DELETE"
+})
+
+loadTasks()
+
+})
+
+document.getElementById("fab").onclick = () => {
+
+if(!selectedDate){
+alert("Select date first")
+return
+}
+
+document.getElementById("taskModal").classList.remove("hidden")
+
+}
+
+
+document.getElementById("gotoToday").onclick=()=>{
+
+calendar.today()
+
+const today = new Date().toISOString().split("T")[0]
+
+selectedDate = today
+
+document.getElementById("selDateTxt").innerText = today
+
+document.querySelectorAll(".fc-daygrid-day").forEach(d=>{
+d.classList.remove("selected-day")
+})
+
+const todayCell = document.querySelector(`[data-date="${today}"]`)
+if(todayCell) todayCell.classList.add("selected-day")
+
+renderTasks()
+
+}
+
+
+document.getElementById("clearDay").onclick = async () => {
+
+if(!selectedDate){
+alert("Select date first")
+return
+}
+
+await fetch(`https://timesync-backend-eqju.onrender.com/api/tasks/date/${selectedDate}`,{
+method:"DELETE"
+})
+
+loadTasks()
+
+}
+function generateWeeklyChart(){
+
+const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+
+let counts = [0,0,0,0,0,0,0]
+
+tasks.forEach(t=>{
+const d = new Date(t.date).getDay()
+counts[d]++
+})
+
+const ctx = document.getElementById("productivityChart")
+
+if(productivityChart){
+productivityChart.destroy()
+}
+
+productivityChart = new Chart(ctx,{
+type:"bar",
+data:{
+labels:days,
+datasets:[{
+label:"Tasks",
+data:counts,
+backgroundColor:"#8b5cf6"
+}]
+},
+options:{
+plugins:{legend:{display:false}},
+scales:{y:{beginAtZero:true}}
+}
+})
+
+}
+const toggle = document.getElementById("themeToggle")
+
+toggle.onclick = () => {
+
+document.body.classList.toggle("light-mode")
+
+}
+const modal = document.getElementById("taskModal")
+const input = document.getElementById("taskInput")
+
+document.getElementById("cancelTask").onclick = ()=>{
+modal.classList.add("hidden")
+input.value=""
+}
+
+document.getElementById("saveTask").onclick = async ()=>{
+
+const title = input.value.trim()
+const time = document.getElementById("taskTime").value
+
+if(!title) return
+
+if(!selectedDate){
+alert("Select a date first")
+return
+}
+
+await fetch("https://timesync-backend-eqju.onrender.com/api/tasks",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+title:title,
+date:selectedDate,
+time:time
+})
+
+})
+
+loadTasks()
+
+input.value=""
+modal.classList.add("hidden")
+
+}
+const sidebarButtons = document.querySelectorAll(".sidebar-btn")
+
+const plannerSection = document.getElementById("plannerSection")
+const tasksSection = document.getElementById("tasksSection")
+const statsSection = document.getElementById("statsSection")
+const settingsSection = document.getElementById("settingsSection")
+
+function hideAllSections(){
+plannerSection.classList.add("hidden")
+tasksSection.classList.add("hidden")
+statsSection.classList.add("hidden")
+settingsSection.classList.add("hidden")
+}
+
+sidebarButtons.forEach(btn => {
+
+btn.addEventListener("click",()=>{
+
+sidebarButtons.forEach(b => b.classList.remove("active"))
+btn.classList.add("active")
+
+hideAllSections()
+
+if(btn.id==="plannerBtn"){
+plannerSection.classList.remove("hidden")
+}
+
+if(btn.id==="tasksBtn"){
+tasksSection.classList.remove("hidden")
+renderAllTasks()
+}
+
+if(btn.id==="statsBtn"){
+statsSection.classList.remove("hidden")
+generateStats()
+}
+
+if(btn.id==="settingsBtn"){
+settingsSection.classList.remove("hidden")
+}
+
+})
+
+})
+function renderAllTasks(){
+
+const box = document.getElementById("allTasks")
+
+box.innerHTML=""
+
+tasks.forEach(t=>{
+
+const div=document.createElement("div")
+
+div.className="p-2 bg-white/10 rounded mb-2"
+
+div.innerText = t.title + " (" + t.date + ")"
+
+box.appendChild(div)
+
+})
+
+}
+setInterval(()=>{
+
+const now = new Date()
+
+tasks.forEach(task=>{
+
+if(!task.time) return
+
+const taskDateTime = new Date(task.date + "T" + task.time)
+
+const diff = taskDateTime - now
+
+if(diff > 0 && diff < 60000){   // within 1 minute
+
+alert("Reminder: " + task.title)
+
+}
+
+})
+
+},30000)
+</script>
+</body>
+</html>
